@@ -22,6 +22,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _snackbartext = MutableLiveData<Event<String>>()
+    val snackbartext: LiveData<Event<String>> = _snackbartext
+
     companion object {
         private const val TAG = "MainViewModel"
         private const val RESTAURANT_ID = "rqdv5juczeskfw1e867"
@@ -72,6 +75,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val responseBody = response.body()
                 if (response.isSuccessful && responseBody != null) {
                     _listReview.value = response.body()?.customerReviews
+                    _snackbartext.value = Event(response.body()?.message.toString())
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")
                 }
