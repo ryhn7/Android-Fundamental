@@ -7,4 +7,9 @@
     <color name="github_light_dark">#24292F</color>
     <color name="iron_200">#e8e8e9</color>
     <color name="iron_500">#bababa</color>
+    <color name="selected">#1A1F25</color>
+<!--    pink-->
+    <color name="pink">#FFC0CB</color>
+<!--    green-->
+    <color name="green">#00FF00</color>
 </resources>
