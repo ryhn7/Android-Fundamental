@@ -6,6 +6,7 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiConfig {
     companion object {
@@ -22,6 +23,7 @@ class ApiConfig {
 
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .client(githubClient)
                 .build()
 

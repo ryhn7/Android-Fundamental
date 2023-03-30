@@ -8,8 +8,6 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_favourite">Gallery</string>
-    <string name="menu_setting">Setting</string>
     <string name="title_icon">Main Icon</string>
     <string name="search">Username Search</string>
     <string name="search_hint">Github Username</string>
@@ -17,4 +15,5 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="user_name">User Name</string>
     <string name="profile_picture">Profile Picture</string>
+    <string name="results">Showing %d results</string>
 </resources>
