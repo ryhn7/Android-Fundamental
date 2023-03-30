@@ -13,4 +13,8 @@
     <string name="title_icon">Main Icon</string>
     <string name="search">Username Search</string>
     <string name="search_hint">Github Username</string>
+    <string name="theme">THEME</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="user_name">User Name</string>
+    <string name="profile_picture">Profile Picture</string>
 </resources>
