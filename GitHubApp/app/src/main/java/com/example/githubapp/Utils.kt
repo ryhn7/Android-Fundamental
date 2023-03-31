@@ -3,6 +3,6 @@ package com.example.githubapp
 class Utils {
 
     companion object{
-        const val TOKEN = "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"
+        const val TOKEN = "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"
     }
 }

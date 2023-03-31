@@ -16,6 +16,7 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="colorControlNormal">@color/iron_500</item>
         <item name="android:editTextColor">@color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
     </style>
 
     <style name="Theme.GithubApp.NoActionBar">
