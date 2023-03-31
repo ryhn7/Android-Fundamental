@@ -21,6 +21,7 @@ import com.example.githubapp.databinding.ActivityMainBinding
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.githubapp.adapter.GithubUserResponseAdapter
 import com.example.githubapp.model.User
 import com.example.githubapp.ui.viewmodel.MainViewModel
@@ -29,9 +30,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-
-    private val fragmentProgressBar =
-        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main)
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -48,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.user.observe(this) {
             showSearchResult(it)
         }
-        
+
         mainViewModel.isLoading.observe(this) {
             showLoading(it)
         }
@@ -109,10 +107,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading(state: Boolean) {
         if (state) {
-            fragmentProgressBar?.view?.findViewById<View>(R.id.progressBar)?.visibility =
-                View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
         } else {
-            fragmentProgressBar?.view?.findViewById<View>(R.id.progressBar)?.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
         }
     }
 

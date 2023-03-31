@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val progressBar: ProgressBar = binding.progressBar
+
         val recyclerView: RecyclerView = binding.rvUsers
 
 //        homeViewModel.progressBar.observe(viewLifecycleOwner) {
