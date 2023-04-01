@@ -10,6 +10,12 @@ import com.example.githubapp.model.User
 class GithubUserResponseAdapter(private val listUserResponse: ArrayList<User>) :
     RecyclerView.Adapter<GithubUserResponseAdapter.GithubUserResponseViewHolder>() {
 
+    private lateinit var onItemClickCallback: OnItemClickCallback
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
+
     class GithubUserResponseViewHolder(var binding: ItemCardBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -25,14 +31,20 @@ class GithubUserResponseAdapter(private val listUserResponse: ArrayList<User>) :
         val user = listUserResponse[position]
 
         holder.binding.apply {
-            tvUsername.text = user.login
-//            use glide to load image
-            Glide.with(holder.itemView.context)
-                .load(user.avatarUrl)
-                .into(imgProfile)
+            holder.binding.apply {
+                tvUsername.text = user.login
+                Glide.with(holder.itemView.context)
+                    .load(user.avatarUrl)
+                    .into(imgProfile)
+            }
+            holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(user) }
         }
     }
 
     override fun getItemCount() = listUserResponse.size
+
+    interface OnItemClickCallback {
+        fun onItemClicked(user: User)
+    }
 }
 

@@ -8,8 +8,6 @@
     <color name="iron_200">#e8e8e9</color>
     <color name="iron_500">#bababa</color>
     <color name="selected">#1A1F25</color>
-<!--    pink-->
-    <color name="pink">#FFC0CB</color>
-<!--    green-->
-    <color name="green">#00FF00</color>
+    <color name="suva_grey">#8E8E8E</color>
+    <color name="prussian_blue">#00376B</color>
 </resources>

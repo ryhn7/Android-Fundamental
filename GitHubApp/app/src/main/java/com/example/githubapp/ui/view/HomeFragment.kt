@@ -2,7 +2,9 @@ package com.example.githubapp.ui.view
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -24,8 +26,6 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private val homeViewModel: HomeViewModel by viewModels()
@@ -79,7 +79,7 @@ class HomeFragment : Fragment() {
         })
     }
 
-        private fun errorOccurred() {
+    private fun errorOccurred() {
         Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
     }
 
@@ -100,6 +100,18 @@ class HomeFragment : Fragment() {
             adapter = githubUserResponseAdapter
             setHasFixedSize(true)
         }
+
+        githubUserResponseAdapter.setOnItemClickCallback(object : GithubUserResponseAdapter.OnItemClickCallback {
+            override fun onItemClicked(user: User) {
+                goToDetailUser(user)
+            }
+        })
+    }
+
+    private fun goToDetailUser(user: User){
+        val intent = Intent(context, DetailActivity::class.java)
+        intent.putExtra(DetailActivity.EXTRA_USERNAME, user.login)
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

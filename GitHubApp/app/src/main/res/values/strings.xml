@@ -16,4 +16,12 @@
     <string name="user_name">User Name</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="results">Showing %d results</string>
+    <string name="dummy_data">100</string>
+    <string name="repo">Repositories</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="profile_bio">Bio</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="not_found">No users found</string>
 </resources>

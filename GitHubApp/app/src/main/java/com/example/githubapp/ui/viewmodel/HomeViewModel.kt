@@ -29,7 +29,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val isError: LiveData<Boolean> = _isError
 
     companion object{
-        private const val TAG = "MainViewModel"
+        private const val TAG = "HomeViewModel"
     }
 
     init {
@@ -64,8 +64,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 Log.e(TAG, "onFailure: ${t.message}")
             }
         })
-
-
     }
 
 }
