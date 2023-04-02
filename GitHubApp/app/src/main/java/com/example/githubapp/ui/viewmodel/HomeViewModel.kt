@@ -2,12 +2,9 @@ package com.example.githubapp.ui.viewmodel
 
 import android.app.Application
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.githubapp.Utils
 import com.example.githubapp.api.ApiConfig
 import com.example.githubapp.model.GithubUserResponse
 import com.example.githubapp.model.User
@@ -28,7 +25,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _isError = MutableLiveData(false)
     val isError: LiveData<Boolean> = _isError
 
-    companion object{
+    companion object {
         private const val TAG = "HomeViewModel"
     }
 
@@ -36,10 +33,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         findUser("\"\"")
     }
 
-    fun findUser(query: String){
+    fun findUser(query: String) {
         _isLoading.value = true
 
-        val githubClient = ApiConfig.getApiService(context).searchUsername(token = "Bearer ${Utils.TOKEN}" , query)
+        val githubClient = ApiConfig.getApiService(context).searchUsername(query)
         githubClient.enqueue(object : Callback<GithubUserResponse> {
             override fun onResponse(
                 call: Call<GithubUserResponse>,
@@ -47,12 +44,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             ) {
                 _isLoading.value = false
                 _isError.value = false
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     val responseBody = response.body()
-                    if(responseBody != null)  {
+                    if (responseBody != null) {
                         _user.value = response.body()?.items
-                    }
-                    else{
+                    } else {
                         Log.e(TAG, "onFailure: ${response.message()}")
                     }
                 }

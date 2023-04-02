@@ -3,6 +3,8 @@ package com.example.githubapp.api
 import android.content.Context
 import com.chuckerteam.chucker.BuildConfig
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.example.githubapp.Utils
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,6 +17,13 @@ class ApiConfig {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
             } else {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
+            }
+
+            val authInterceptor = Interceptor{ chain ->
+                val newRequest = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer ${Utils.TOKEN}")
+                    .build()
+                chain.proceed(newRequest)
             }
 
             val githubClient = OkHttpClient.Builder()

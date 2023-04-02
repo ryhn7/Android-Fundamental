@@ -71,4 +71,12 @@
         <item name="android:text">@string/dummy_data</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_github_light</item>
+        <!-- Status & Navigation bar color. -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
 </resources>

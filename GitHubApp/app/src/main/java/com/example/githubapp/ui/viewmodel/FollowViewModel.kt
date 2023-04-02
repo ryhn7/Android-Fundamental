@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.githubapp.Utils
 import com.example.githubapp.api.ApiConfig
 import com.example.githubapp.model.User
 import retrofit2.Call
@@ -33,7 +32,7 @@ class FollowViewModel(application: Application) : AndroidViewModel(application) 
         _isLoading.value = true
 
         val githubClient = ApiConfig.getApiService(context)
-            .getUserFollowers(token = "Bearer ${Utils.TOKEN}", username)
+            .getUserFollowers(username)
         githubClient.enqueue(object : Callback<ArrayList<User>> {
             override fun onResponse(
                 call: Call<ArrayList<User>>,
@@ -62,7 +61,7 @@ class FollowViewModel(application: Application) : AndroidViewModel(application) 
         _isLoading.value = true
 
         val githubClient = ApiConfig.getApiService(context)
-            .getUserFollowing(token = "Bearer ${Utils.TOKEN}", username)
+            .getUserFollowing(username)
         githubClient.enqueue(object : Callback<ArrayList<User>> {
             override fun onResponse(
                 call: retrofit2.Call<ArrayList<User>>,

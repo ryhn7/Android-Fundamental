@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.githubapp.Utils.Companion.TOKEN
 import com.example.githubapp.api.ApiConfig
 import com.example.githubapp.model.DataUser
 import retrofit2.Callback
@@ -36,7 +35,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
         _callCounter.value = 1
 
         val githubClient = ApiConfig.getApiService(context)
-            .getUserDetailByUsername(token = "Bearer $TOKEN", username)
+            .getUserDetailByUsername(username)
         githubClient.enqueue(object : Callback<DataUser> {
             override fun onResponse(call: retrofit2.Call<DataUser>, response: Response<DataUser>) {
                 if (response.isSuccessful) {
