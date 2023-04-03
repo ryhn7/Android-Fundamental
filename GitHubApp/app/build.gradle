@@ -18,6 +18,12 @@ android {
         versionCode 1
         versionName "1.0"
 
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+        buildConfigField "String", "API_KEY", "\"" + localProperties['apiKey'] + "\""
+
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

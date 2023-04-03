@@ -6,8 +6,7 @@ import android.widget.TextView
 class Utils {
 
     companion object{
-        const val TOKEN = ""
-
+        const val TOKEN = BuildConfig.API_KEY
         fun TextView.setVisibleOrInvisible(text: String?) {
             if (!text.isNullOrBlank()) {
                 this.text = text
