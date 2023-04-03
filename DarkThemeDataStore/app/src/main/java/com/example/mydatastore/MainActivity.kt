@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                
+
             }
         }
     }
