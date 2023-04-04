@@ -1,87 +1,48 @@
 package com.example.githubapp.ui.viewmodel
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.githubapp.api.ApiConfig
-import com.example.githubapp.model.User
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.*
+import com.example.githubapp.data.Result
+import com.example.githubapp.data.UserRepository
+import com.example.githubapp.data.remote.response.User
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FollowViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class FollowViewModel @Inject constructor(private val repo: UserRepository) : ViewModel() {
 
-    private val context = getApplication<Application>().applicationContext
 
-    private val _followers = MutableLiveData<ArrayList<User>?>(null)
-    val followers: LiveData<ArrayList<User>?> = _followers
+    private val _followers = MutableStateFlow<Result<ArrayList<User>>>(Result.Loading)
+    val followers = _followers.asStateFlow()
 
-    private val _following = MutableLiveData<ArrayList<User>?>(null)
-    val following: LiveData<ArrayList<User>?> = _following
+    private val _following = MutableStateFlow<Result<ArrayList<User>>>(Result.Loading)
+    val following = _following.asStateFlow()
 
-    private val _isLoading = MutableLiveData(true)
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
-    companion object {
-        private const val TAG = "FollowViewModel"
-    }
 
     fun getUserFollowers(username: String) {
+        _followers.value = Result.Loading
+        viewModelScope.launch {
+            repo.getUserFollowers(username).collect {
+                _followers.value = it
+            }
+        }
+
         _isLoading.value = true
-
-        val githubClient = ApiConfig.getApiService(context)
-            .getUserFollowers(username)
-        githubClient.enqueue(object : Callback<ArrayList<User>> {
-            override fun onResponse(
-                call: Call<ArrayList<User>>,
-                response: Response<ArrayList<User>>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        _followers.value = response.body()
-                    } else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
-
     }
 
     fun getUserFollowing(username: String) {
+        _following.value = Result.Loading
+        viewModelScope.launch {
+            repo.getUserFollowing(username).collect {
+                _following.value = it
+            }
+        }
+
         _isLoading.value = true
-
-        val githubClient = ApiConfig.getApiService(context)
-            .getUserFollowing(username)
-        githubClient.enqueue(object : Callback<ArrayList<User>> {
-            override fun onResponse(
-                call: retrofit2.Call<ArrayList<User>>,
-                response: Response<ArrayList<User>>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        _following.value = response.body()
-                    } else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<ArrayList<User>>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
     }
 }

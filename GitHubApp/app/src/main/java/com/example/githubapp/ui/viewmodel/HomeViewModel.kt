@@ -1,65 +1,30 @@
 package com.example.githubapp.ui.viewmodel
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.githubapp.api.ApiConfig
-import com.example.githubapp.model.GithubUserResponse
-import com.example.githubapp.model.User
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.*
+import com.example.githubapp.data.*
+import com.example.githubapp.data.remote.response.User
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val repo: UserRepository) : ViewModel() {
 
-    private val context = getApplication<Application>().applicationContext
-
-    private val _user = MutableLiveData<ArrayList<User>>()
-    val user: LiveData<ArrayList<User>> = _user
-
-    private val _isLoading = MutableLiveData(true)
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _isError = MutableLiveData(false)
-    val isError: LiveData<Boolean> = _isError
-
-    companion object {
-        private const val TAG = "HomeViewModel"
-    }
+    private val _users = MutableStateFlow<Result<ArrayList<User>>>(Result.Loading)
+    val users = _users.asStateFlow()
 
     init {
         findUser("\"\"")
     }
 
     fun findUser(query: String) {
-        _isLoading.value = true
-
-        val githubClient = ApiConfig.getApiService(context).searchUsername(query)
-        githubClient.enqueue(object : Callback<GithubUserResponse> {
-            override fun onResponse(
-                call: Call<GithubUserResponse>,
-                response: Response<GithubUserResponse>
-            ) {
-                _isLoading.value = false
-                _isError.value = false
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    if (responseBody != null) {
-                        _user.value = response.body()?.items
-                    } else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
-                    }
-                }
+        _users.value = Result.Loading
+        viewModelScope.launch {
+            repo.searchUsername(query).collect {
+                _users.value = it
             }
-
-            override fun onFailure(call: Call<GithubUserResponse>, t: Throwable) {
-                _isLoading.value = false
-                _isError.value = true
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
-        })
+        }
     }
-
 }

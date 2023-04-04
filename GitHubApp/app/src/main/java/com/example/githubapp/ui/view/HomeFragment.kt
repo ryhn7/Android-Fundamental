@@ -9,13 +9,20 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubapp.R
 import com.example.githubapp.adapter.GithubUserResponseAdapter
 import com.example.githubapp.databinding.FragmentHomeBinding
-import com.example.githubapp.model.User
+import com.example.githubapp.data.remote.response.User
 import com.example.githubapp.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
+import com.example.githubapp.data.*
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -36,16 +43,12 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        homeViewModel.user.observe(viewLifecycleOwner) {
-            showSearchResult(it)
-        }
-
-        homeViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it)
-        }
-
-        homeViewModel.isError.observe(viewLifecycleOwner) { error ->
-            if (error) errorOccurred()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                homeViewModel.users.collect { result ->
+                    showSearchResult(result)
+                }
+            }
         }
 
         return root
@@ -55,7 +58,8 @@ class HomeFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main, menu)
 
-        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager =
+            requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = menu.findItem(R.id.search).actionView as SearchView
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
@@ -74,35 +78,48 @@ class HomeFragment : Fragment() {
     }
 
     private fun errorOccurred() {
-        Toast.makeText(context, "Error occurred", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "ERROR GAN", Toast.LENGTH_SHORT).show()
     }
 
     private fun showLoading(state: Boolean) {
         if (state) {
             binding.progressBar.visibility = View.VISIBLE
+            binding.rvUsers.visibility = View.GONE
         } else {
             binding.progressBar.visibility = View.GONE
+            binding.rvUsers.visibility = View.VISIBLE
         }
     }
 
-    private fun showSearchResult(user: ArrayList<User>) {
-        binding.tvResultCount.text = getString(R.string.results, user.size)
-
-        val githubUserResponseAdapter = GithubUserResponseAdapter(user)
-        binding.rvUsers.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = githubUserResponseAdapter
-            setHasFixedSize(true)
-        }
-
-        githubUserResponseAdapter.setOnItemClickCallback(object : GithubUserResponseAdapter.OnItemClickCallback {
-            override fun onItemClicked(user: User) {
-                goToDetailUser(user)
+    private fun showSearchResult(result: Result<ArrayList<User>>) {
+        when (result) {
+            is Result.Loading -> showLoading(true)
+            is Result.Error -> {
+                errorOccurred()
+                showLoading(false)
             }
-        })
+            is Result.Success -> {
+                binding.tvResultCount.text = getString(R.string.results, result.data.size)
+
+                val githubUserResponseAdapter = GithubUserResponseAdapter(result.data)
+                binding.rvUsers.apply {
+                    layoutManager = LinearLayoutManager(requireActivity())
+                    adapter = githubUserResponseAdapter
+                    setHasFixedSize(true)
+                }
+                githubUserResponseAdapter.setOnItemClickCallback(object :
+                    GithubUserResponseAdapter.OnItemClickCallback {
+                    override fun onItemClicked(user: User) {
+                        goToDetailUser(user)
+                    }
+                })
+                showLoading(false)
+            }
+        }
     }
 
-    private fun goToDetailUser(user: User){
+
+    private fun goToDetailUser(user: User) {
         val intent = Intent(context, DetailActivity::class.java)
         intent.putExtra(DetailActivity.EXTRA_USERNAME, user.login)
         startActivity(intent)

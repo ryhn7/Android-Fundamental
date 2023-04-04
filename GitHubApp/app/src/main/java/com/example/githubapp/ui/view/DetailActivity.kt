@@ -1,23 +1,33 @@
 package com.example.githubapp.ui.view
 
 import android.content.Intent
+import com.example.githubapp.data.Result
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.githubapp.R
 import com.example.githubapp.Utils.Companion.setVisibleOrInvisible
 import com.example.githubapp.adapter.SectionsPagerAdapter
+import com.example.githubapp.data.local.entity.UserEntity
 import com.example.githubapp.databinding.ActivityDetailBinding
-import com.example.githubapp.model.DataUser
+import com.example.githubapp.data.remote.response.DataUser
+import com.example.githubapp.data.remote.response.User
 import com.example.githubapp.ui.viewmodel.DetailViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 
     private var _binding: ActivityDetailBinding? = null
@@ -27,6 +37,9 @@ class DetailActivity : AppCompatActivity() {
 
     private var username: String? = null
     private var blog: String? = null
+
+    private var userDetail: UserEntity? = null
+    private var isFavorite: Boolean? = false
 
 
     companion object {
@@ -46,32 +59,54 @@ class DetailActivity : AppCompatActivity() {
         setViewPager()
         setToolbar()
 
-        detailViewModel.user.observe(this) { user ->
-            if (user != null) {
-                parseUserDetail(user)
-                blog = user.blog
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    detailViewModel.user.collect() { result ->
+                        onDetailUserReceived(result)
+                    }
+                }
+                launch {
+                    detailViewModel.isLoading.collect() { loading ->
+                        if (!loading) detailViewModel.getUserDetail(username ?: "")
+                    }
+                }
             }
         }
 
-        detailViewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
-
-        detailViewModel.isError.observe(this) { error ->
-            if (error) errorOccurred()
-        }
-
-        detailViewModel.callCounter.observe(this) { counter ->
-            if (counter < 1) detailViewModel.getUserDetail(username!!)
-        }
-
-        binding.tvProfileBlog.setOnClickListener{
+        binding.tvProfileBlog.setOnClickListener {
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(blog)
             }.also {
                 startActivity(it)
             }
 
+        }
+    }
+
+    private fun onDetailUserReceived(result: Result<DataUser>) {
+        when (result) {
+            is Result.Loading -> showLoading(true)
+            is Result.Success -> {
+                result.data.let { user ->
+                    parseUserDetail(user)
+
+                    val userEntity = UserEntity(
+                        user.login,
+                        user.avatarUrl,
+                        true
+                    )
+
+                    userDetail = userEntity
+                }
+
+                showLoading(false)
+            }
+            is Result.Error -> {
+                errorOccurred()
+                showLoading(false)
+                Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -93,7 +128,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setViewPager(){
+    private fun setViewPager() {
         val viewPager: ViewPager2 = binding.viewPager
         val tabs: TabLayout = binding.tabLayout
 
@@ -104,7 +139,7 @@ class DetailActivity : AppCompatActivity() {
         }.attach()
     }
 
-    private fun setToolbar(){
+    private fun setToolbar() {
         setSupportActionBar(binding.toolbarDetailProfile)
         binding.collapsingToolbarLayout.isTitleEnabled = false
         supportActionBar?.apply {

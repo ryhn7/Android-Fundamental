@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:visibility="gone"
-        android:indeterminateTint="@android:color/black"
+        android:indeterminateTint="?attr/colorOnSecondary"
         android:layout_gravity="top|center_horizontal"
         tools:visibility="visible" />
 

@@ -1,4 +1,4 @@
-package com.example.githubapp.api
+package com.example.githubapp.data.remote.retrofit
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor

@@ -10,4 +10,16 @@
         android:name="com.example.githubapp.ui.view.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_favorite"
+        android:name="com.example.githubapp.ui.view.FavoriteFragment"
+        android:label="@string/menu_favorite"
+        tools:layout="@layout/fragment_favorite" />
+
+    <activity
+        android:id="@+id/nav_setting"
+        android:name="com.example.githubapp.ui.view.SettingActivity"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/activity_setting" />
 </navigation>
