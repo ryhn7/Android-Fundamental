@@ -1,6 +1,7 @@
 package com.example.githubapp.ui.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.githubapp.data.Result
 import com.example.githubapp.data.UserRepository
 import com.example.githubapp.data.remote.response.User

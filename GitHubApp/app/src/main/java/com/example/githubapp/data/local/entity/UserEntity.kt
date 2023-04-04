@@ -1,7 +1,9 @@
 package com.example.githubapp.data.local.entity
 
 import android.os.Parcelable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "user")
@@ -12,7 +14,7 @@ data class UserEntity(
     var id: String,
 
     @ColumnInfo(name = "avatar_url")
-    var avatarUrl: String? = null,
+    var avatarUrl: String,
 
     @ColumnInfo(name = "is_favorite")
     var isFavorite: Boolean = false

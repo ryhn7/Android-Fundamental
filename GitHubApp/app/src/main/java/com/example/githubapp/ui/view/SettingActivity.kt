@@ -1,9 +1,9 @@
 package com.example.githubapp.ui.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.CompoundButton
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope

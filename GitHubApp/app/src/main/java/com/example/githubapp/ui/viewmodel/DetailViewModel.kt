@@ -1,15 +1,13 @@
 package com.example.githubapp.ui.viewmodel
 
-import android.app.Application
-import android.util.Log
-import androidx.lifecycle.*
-import com.example.githubapp.data.remote.retrofit.ApiConfig
-import com.example.githubapp.data.remote.response.DataUser
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.githubapp.data.Result
 import com.example.githubapp.data.UserRepository
+import com.example.githubapp.data.local.entity.UserEntity
+import com.example.githubapp.data.remote.response.DataUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -35,5 +33,19 @@ class DetailViewModel @Inject constructor(private val repo: UserRepository) : Vi
         }
         _isLoading.value = true
     }
+
+    fun saveFavorite(user: UserEntity) {
+        viewModelScope.launch {
+            repo.saveFavoriteUser(user)
+        }
+    }
+
+    fun deleteFavorite(user: UserEntity) {
+        viewModelScope.launch {
+            repo.deleteFavoriteUser(user)
+        }
+    }
+
+    fun checkFavorite(username: String): Flow<Boolean> = repo.isFavoriteUser(username)
 
 }

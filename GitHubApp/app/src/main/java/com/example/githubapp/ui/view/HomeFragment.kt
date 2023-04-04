@@ -15,12 +15,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubapp.R
 import com.example.githubapp.adapter.GithubUserResponseAdapter
-import com.example.githubapp.databinding.FragmentHomeBinding
+import com.example.githubapp.data.Result
 import com.example.githubapp.data.remote.response.User
+import com.example.githubapp.databinding.FragmentHomeBinding
 import com.example.githubapp.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.launch
-import com.example.githubapp.data.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {

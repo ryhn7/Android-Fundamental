@@ -1,7 +1,6 @@
 package com.example.githubapp.ui.view
 
 import android.content.Intent
-import com.example.githubapp.data.Result
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -16,19 +15,18 @@ import com.bumptech.glide.Glide
 import com.example.githubapp.R
 import com.example.githubapp.Utils.Companion.setVisibleOrInvisible
 import com.example.githubapp.adapter.SectionsPagerAdapter
+import com.example.githubapp.data.Result
 import com.example.githubapp.data.local.entity.UserEntity
-import com.example.githubapp.databinding.ActivityDetailBinding
 import com.example.githubapp.data.remote.response.DataUser
-import com.example.githubapp.data.remote.response.User
+import com.example.githubapp.databinding.ActivityDetailBinding
 import com.example.githubapp.ui.viewmodel.DetailViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity(), View.OnClickListener {
 
     private var _binding: ActivityDetailBinding? = null
     private val binding get() = _binding!!
@@ -39,7 +37,7 @@ class DetailActivity : AppCompatActivity() {
     private var blog: String? = null
 
     private var userDetail: UserEntity? = null
-    private var isFavorite: Boolean? = false
+    private var checkFavorite: Boolean? = false
 
 
     companion object {
@@ -67,6 +65,12 @@ class DetailActivity : AppCompatActivity() {
                     }
                 }
                 launch {
+                    detailViewModel.checkFavorite(username ?: "").collect() { state ->
+                        checkFavorite(state)
+                        checkFavorite = state
+                    }
+                }
+                launch {
                     detailViewModel.isLoading.collect() { loading ->
                         if (!loading) detailViewModel.getUserDetail(username ?: "")
                     }
@@ -74,13 +78,30 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
-        binding.tvProfileBlog.setOnClickListener {
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(blog)
-            }.also {
-                startActivity(it)
-            }
+        binding.tvProfileBlog.setOnClickListener (this)
+        binding.fabFavorite.setOnClickListener (this)
+    }
 
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.tv_profile_blog -> {
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(blog)
+                }.also {
+                    startActivity(it)
+                }
+            }
+            R.id.fab_favorite -> {
+                if (checkFavorite == true) {
+                    userDetail?.let { detailViewModel.deleteFavorite(it) }
+                    checkFavorite(false)
+                    Toast.makeText(this, "User deleted from favorite", Toast.LENGTH_SHORT).show()
+                } else {
+                    userDetail?.let { detailViewModel.saveFavorite(it) }
+                    checkFavorite(true)
+                    Toast.makeText(this, "User added to favorite", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -98,6 +119,7 @@ class DetailActivity : AppCompatActivity() {
                     )
 
                     userDetail = userEntity
+                    blog = user.blog
                 }
 
                 showLoading(false)
@@ -107,6 +129,14 @@ class DetailActivity : AppCompatActivity() {
                 showLoading(false)
                 Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun checkFavorite(favorite: Boolean) {
+        if (favorite) {
+            binding.fabFavorite.setImageResource(R.drawable.ic_baseline_favorite_24)
+        } else {
+            binding.fabFavorite.setImageResource(R.drawable.ic_favorite_border_24)
         }
     }
 
@@ -185,6 +215,7 @@ class DetailActivity : AppCompatActivity() {
         _binding = null
         username = null
         blog = null
+        checkFavorite = null
 
         super.onDestroy()
     }
